@@ -52,23 +52,23 @@ def accounting(request):
         radacct.unique_id = request.data.get('Acct-Unique-Session-Id', '')
         radacct.realm = request.data.get('Realm', '')
         radacct.nas_ip_address = request.data.get('NAS-IP-Address', '')
-        radacct.nas_port_id = request.data.get('NAS-Port-ID', '')
+        radacct.nas_port_id = request.data.get('NAS-Port', '')
         radacct.nas_port_type = request.data.get('NAS-Port-Type', '')
         radacct.session_time = request.data.get('Acct-Session-Time', '')
         radacct.authentication = request.data.get('Acct-Authentic', '')
         radacct.input_octets = request.data.get('Acct-Input-Octets', '')
         radacct.output_octets = request.data.get('Acct-Output-Octets', '')
-        radacct.calling_station_id = request.data.get('Calling_Station_Id', '')
-        radacct.called_station_id = request.data.get('Called_Station_Id', '')
+        radacct.calling_station_id = request.data.get('Calling-Station-Id', '')
+        radacct.called_station_id = request.data.get('Called-Station-Id', '')
         radacct.terminate_cause = request.data.get('Acct-Terminate-Cause', '')
         radacct.service_type = request.data.get('Service-Type', '')
         radacct.framed_protocol = request.data.get('Framed-Protocol', '')
         radacct.framed_ip_address = request.data.get('Framed-IP-Address', '')
         status_type = request.data.get('Acct-Status-Type')
-        if status_type == 'Interim-Update':
+        if status_type.lower() == 'interim-update':
             update_time = timezone.now()
             radacct.update_time = update_time
-        if status_type == 'stop':
+        if status_type.lower() == 'stop':
             stop_time = timezone.now()
             radacct.stop_time = stop_time
         radacct.save()
@@ -81,20 +81,19 @@ def accounting(request):
         realm = request.data.get('Realm')
         session_time = request.data.get('Acct-Session-Time')
         nas_ip_address = request.data.get('NAS-IP-Address')
-        nas_port_id = request.data.get('NAS-Port-ID')
+        nas_port_id = request.data.get('NAS-Port')
         nas_port_type = request.data.get('NAS-Port-Type')
         authentication = request.data.get('Acct-Authentic')
         input_octets = request.data.get('Acct-Input-Octets')
         output_octets = request.data.get('Acct-Output-Octets')
-        calling_station_id = request.data.get('Calling_Station_Id')
-        called_station_id = request.data.get('Called_Station_Id')
+        calling_station_id = request.data.get('Calling-Station-Id')
+        called_station_id = request.data.get('Called-Station-Id')
         terminate_cause = request.data.get('Acct-Terminate-Cause')
         service_type = request.data.get('Service-Type')
         framed_protocol = request.data.get('Framed-Protocol')
         framed_ip_address = request.data.get('Framed-IP-Address')
         status_type = request.data.get('Acct-Status-Type')
-        if status_type == 'start':
-            start_time = timezone.now()
+        start_time = timezone.now()
         if session_time is None:
             session_time = timezone.now() - start_time
         RadiusAccounting.objects.create(session_id=session_id, unique_id=unique_id,
