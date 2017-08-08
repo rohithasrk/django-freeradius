@@ -95,6 +95,14 @@ Configure the rest module by editing the file ``/etc/freeradius/mods-enabled/res
         tls = ${..tls}
     }
 
+    accounting {
+        uri = "${..connect_uri}/api/accounting/"
+        method = 'post'
+        body = 'json'
+        data = '{"username": "%{User-Name}", "NAS-IP-Address": "%{NAS-IP-Address}", "NAS-Port": "%{NAS-Port}",  "Called-Station-Id": "%{Called-Station-Id}", "Calling-Station-Id": "%{Calling-Station-Id}",  "NAS-Identifier": "%{NAS-Identifier}", "Acct-Status-Type": "%{Acct-Status-Type}", "Acct-Authentic": "%{Acct-Authentic}", "Acct-Delay-Time": "%{Acct-Delay-Time}", "Acct-Unique-Session-Id": "%{Acct-Unique-Session-Id}", "Acct-Terminate-Cause": "%{Acct-Terminate-Cause}",  "Acct-Input-Octets": "%{Acct-Input-Octets}", "Acct-Output-Octets": "%{Acct-Output-Octets}",  "NAS-Port-Type": "%{NAS-Port-Type}", "Acct-Session-Time": "%{Acct-Session-Time}", "Login-Service": "%{Login-Service}", "Login-IP-Host": "%{Login-IP-Host}", "Acct-Session-Id": "%{Acct-Session-Id}", "Framed-Protocol": "%{Framed-Protocol}", "Framed-IP-Address": "%{Framed-IP-Address}", "Service-Type": "%{Service-Type}", "Realm": "%{Realm}",  "Acct-Authentic": "%{Acct-Authentic}"}'
+        tls = ${..tls}
+    }
+
 Configure the ``authorize``, ``authenticate`` and ``postauth`` section in the default site
 (``/etc/freeradius/sites-enabled/default``) as follows::
 
@@ -110,9 +118,14 @@ Configure the ``authorize``, ``authenticate`` and ``postauth`` section in the de
     post-auth {
        rest
 
+
        Post-Auth-Type REJECT {
             rest
         }
+    }
+
+    accounting {
+       rest
     }
 
 Debugging
