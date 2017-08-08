@@ -56,6 +56,8 @@ class TestApi(TestCase):
 
 
     def test_accounting_start(self):
+        RadiusAccounting.objects.all().count()
+-        self.assertEqual(RadiusAccounting.objects.all().count(), 0)
         RadiusAccounting.objects.create(session_id='35000006', unique_id='75058e505ac30c5b4b9c686ee853b70f',
                                         username='admin', start_time='2017-08-08 15:16:10+0200',
                                         nas_ip_address='172.16.64.91', nas_port_id='1',
@@ -88,6 +90,8 @@ class TestApi(TestCase):
         self.assertEqual(response.data, {''})
 
     def test_accounting_update(self):
+        RadiusAccounting.objects.all().count()
+        self.assertEqual(RadiusAccounting.objects.all().count(), 0)
         RadiusAccounting.objects.create(session_id='35000006', unique_id='75058e505ac30c5b4b9c686ee853b70f',
                                         username='admin', start_time='2017-08-08 15:16:10+0200',
                                         nas_ip_address='172.16.64.91', nas_port_id='1',
@@ -137,6 +141,8 @@ class TestApi(TestCase):
         self.assertEqual(response.data, {''})
 
     def test_accounting_stop(self):
+        RadiusAccounting.objects.all().count()
+       self.assertEqual(RadiusAccounting.objects.all().count(), 0)
         RadiusAccounting.objects.create(session_id='35000006', unique_id='75058e505ac30c5b4b9c686ee853b70f',
                                         username='admin', start_time='2017-08-08 15:16:10+0200',
                                         nas_ip_address='172.16.64.91', nas_port_id='1',
