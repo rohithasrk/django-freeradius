@@ -260,6 +260,14 @@ class AbstractRadiusAccounting(models.Model):
     def __str__(self):
         return self.unique_id
 
+    def acct_status_type(self):
+        """
+        We need this to make DRF happy. There is no field for this radius attribute, but
+        it's needed as the serializer will ignore the field from freeradius, if this is not
+        present
+        """
+        pass
+
 
 @python_2_unicode_compatible
 class AbstractNas(TimeStampedEditableModel):

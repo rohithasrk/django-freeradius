@@ -1,6 +1,6 @@
 import swapper
-from rest_framework import serializers
 from django.utils import timezone
+from rest_framework import serializers
 
 RadiusPostAuth = swapper.load_model("django_freeradius", "RadiusPostAuth")
 RadiusAccounting = swapper.load_model("django_freeradius", "RadiusAccounting")
@@ -25,30 +25,35 @@ class RadiusPostAuthSerializer(serializers.ModelSerializer):
 
 
 class RadiusAccountingSerializer(serializers.ModelSerializer):
+    framed_ip_address = serializers.IPAddressField(required=False, allow_blank=True)
+    session_time = serializers.IntegerField(required=False, default=0)
+    stop_time = serializers.DateTimeField(required=False)
+    update_time = serializers.DateTimeField(required=False)
+    # this is needed otherwise serialize will ignore acct_status_type from accounting packet
+    # as it's not a model field
+    acct_status_type = serializers.CharField()
 
     def validate(self, data):
-        if data['Acct-Status-Type'] == 'Interim-Update':
-            update_time = timezone.now()
-            data['update_time'] = 'update_time'
-        return data
-        if data['Acct-Status-Type'] == 'stop':
-            stop_time = timezone.now()
-            data['stop_time'] = 'stop_time'
-        return data
+        """
+        We need to set some timestamps according to the accounting packet type
+
+        * update_time: set everytime a Interim-Update / Stop packet is received
+        * stop_time: set everytime a Stop packet is received
+        * session_time: calculated if not present in the accounting packet
+
+        :param data: accounting packet
+        :return: Dict accounting packet
+        """
+        if data['acct_status_type'] == 'Interim-Update':
+            data['update_time'] = timezone.now()
+        if data['acct_status_type'] == 'Stop':
+            data['update_time'] = timezone.now()
+            data['stop_time'] = timezone.now()
         if data['session_time'] is None:
-            session_time = timezone.now() - start_time
-            data['session_time'] = 'session_time'
+            data['session_time'] = (timezone.now() - data['start_time']).seconds
+        del data['acct_status_type']
         return data
 
     class Meta:
         model = RadiusAccounting
-        fields = ['session_id', 'unique_id',
-                  'username', 'start_time',
-                  'nas_ip_address', 'nas_port_id',
-                  'nas_port_type', 'session_time',
-                  'authentication', 'realm',
-                  'input_octets', 'output_octets',
-                  'called_station_id', 'terminate_cause',
-                  'service_type', 'framed_protocol',
-                  'framed_ip_address', 'groupname',
-                  'calling_station_id']
+        fields = '__all__'
