@@ -133,7 +133,7 @@ Configure the ``authorize``, ``authenticate`` and ``postauth`` section in the de
      acct_unique
     ...
     }
-
+    
 Debugging
 ---------
 
