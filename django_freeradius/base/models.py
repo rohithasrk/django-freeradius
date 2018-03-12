@@ -1,3 +1,5 @@
+import swapper
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Count
 from django.utils.encoding import python_2_unicode_compatible
@@ -511,3 +513,31 @@ class AbstractRadiusPostAuth(models.Model):
 
     def __str__(self):
         return str(self.username)
+
+
+class AbstractRadiusBatch(TimeStampedEditableModel):
+    users = models.ManyToManyField(get_user_model())
+    radcheck = models.ManyToManyField(swapper.get_model_name('django_freeradius', 'RadiusCheck'))
+    expiration_date = models.DateTimeField(verbose_name=_('expiration time'),
+                                           null=True,
+                                           blank=True)
+
+    class Meta:
+        db_table = 'radbatch'
+        verbose_name = _('radius batch')
+        verbose_name_plural = _('radius batches')
+        abstract = True
+
+    def __str__(self):
+        return str("Radius Batch: {0}".format(self.pk))
+
+    def delete(self):
+        self.users.all().delete()
+        self.radcheck.all().delete()
+        super(AbstractRadiusBatch, self).delete()
+
+    def retrieve(self):
+        user_details = {}
+        for u in self.users.all():
+            user_details[u.username] = u.value
+        return user_details
